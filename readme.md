@@ -8,10 +8,11 @@ words and phrases that you add emphasis to so that they stand out.
 
 Three types of emphasis are supported:
 
-|----------|------------|---|---------------------|
-|**Bold**  | Asterisk   | * |This \***is bold**\*.|
-|*Italic*  | Underscore | _ |*\_This is italic\_*.|
-|`Code`    | Backtick   | ` |This is \``code`\`.  |
+|Type      |Character         |Example              |
+|----------|------------------|---------------------|
+|**Bold**  | Asterisk ( * )   |This \***is bold**\*.|
+|*Italic*  | Underscore ( _ ) |*\_This is italic\_*.|
+|`Code`    | Backtick ( \` )  |This is \``code`\`.  |
 
 You can even nest the different types of emphasis.
 
