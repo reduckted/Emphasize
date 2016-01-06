@@ -4,6 +4,14 @@ _A Visual Studio extension that shows emphasis in your comments._
 Sick of boring comments in your code? This extension will highlight 
 words and phrases that you add emphasis to so that they stand out.
 
+## Examples
+
+![C#](images/cs-example.png)
+
+![LESS](images/less-example.png)
+
+![HTML](images/html-example.png)
+
 ## Types of Emphasis
 
 Three types of emphasis are supported:
