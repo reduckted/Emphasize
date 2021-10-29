@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
     <Metadata>
-        <Identity Id="Emphasize.thirdwaffle.cef618e9-5abf-4ac2-8cdb-03f574f2ccdb" Version="1.2.3" Language="en-US" Publisher="reduckted" />
+        <Identity Id="Emphasize.cef618e9-5abf-4ac2-8cdb-03f574f2ccdb" Version="1.3.0" Language="en-US" Publisher="reduckted" />
         <DisplayName>Emphasize!</DisplayName>
         <Description xml:space="preserve">Add emphasis to your comments!</Description>
         <MoreInfo>https://github.com/reduckted/emphasize</MoreInfo>

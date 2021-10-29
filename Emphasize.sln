@@ -12,13 +12,14 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{96FD07F0
 		.gitignore = .gitignore
 		.github\workflows\ci.yml = .github\workflows\ci.yml
 		LICENSE = LICENSE
+		publish.json = publish.json
 		.github\workflows\publish.yml = .github\workflows\publish.yml
 		README.md = README.md
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Emphasize", "source\Emphasize\Emphasize.csproj", "{84E90011-58E4-4943-A990-73AEB0769625}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Emphasize.UnitTests", "tests\Emphasize.UnitTests\Emphasize.UnitTests.csproj", "{5BC36D02-298C-4AFE-A63E-FA08E876DC4D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Emphasize.UnitTests", "tests\Emphasize.UnitTests\Emphasize.UnitTests.csproj", "{5BC36D02-298C-4AFE-A63E-FA08E876DC4D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
