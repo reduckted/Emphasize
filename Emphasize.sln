@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.28407.52
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31825.309
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "source", "source", "{C9607F95-0E77-42C1-B792-447F30990B28}"
 EndProject
@@ -10,15 +10,13 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{96FD07F0-FDFE-4A3A-84F5-86DD84D2EF8F}"
 	ProjectSection(SolutionItems) = preProject
 		.gitignore = .gitignore
-		LICENSE.txt = LICENSE.txt
-		readme.md = readme.md
+		LICENSE = LICENSE
+		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "Emphasize.Vsix", "source\Emphasize.Vsix\Emphasize.Vsix.vbproj", "{DCAFFEED-89F9-4B75-BCD7-EEE6AA6A90DA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Emphasize", "source\Emphasize\Emphasize.csproj", "{84E90011-58E4-4943-A990-73AEB0769625}"
 EndProject
-Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "Emphasize", "source\Emphasize\Emphasize.vbproj", "{0E52667E-D2AE-4626-AF6C-A45228F3E7B2}"
-EndProject
-Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "Emphasize.UnitTests", "tests\Emphasize.UnitTests\Emphasize.UnitTests.vbproj", "{2A2E7146-BEA3-4BCD-BC98-D17183EE793E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Emphasize.UnitTests", "tests\Emphasize.UnitTests\Emphasize.UnitTests.csproj", "{5BC36D02-298C-4AFE-A63E-FA08E876DC4D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -26,26 +24,21 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{DCAFFEED-89F9-4B75-BCD7-EEE6AA6A90DA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{DCAFFEED-89F9-4B75-BCD7-EEE6AA6A90DA}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{DCAFFEED-89F9-4B75-BCD7-EEE6AA6A90DA}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{DCAFFEED-89F9-4B75-BCD7-EEE6AA6A90DA}.Release|Any CPU.Build.0 = Release|Any CPU
-		{0E52667E-D2AE-4626-AF6C-A45228F3E7B2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{0E52667E-D2AE-4626-AF6C-A45228F3E7B2}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{0E52667E-D2AE-4626-AF6C-A45228F3E7B2}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{0E52667E-D2AE-4626-AF6C-A45228F3E7B2}.Release|Any CPU.Build.0 = Release|Any CPU
-		{2A2E7146-BEA3-4BCD-BC98-D17183EE793E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2A2E7146-BEA3-4BCD-BC98-D17183EE793E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2A2E7146-BEA3-4BCD-BC98-D17183EE793E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2A2E7146-BEA3-4BCD-BC98-D17183EE793E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{84E90011-58E4-4943-A990-73AEB0769625}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{84E90011-58E4-4943-A990-73AEB0769625}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{84E90011-58E4-4943-A990-73AEB0769625}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{84E90011-58E4-4943-A990-73AEB0769625}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5BC36D02-298C-4AFE-A63E-FA08E876DC4D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5BC36D02-298C-4AFE-A63E-FA08E876DC4D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5BC36D02-298C-4AFE-A63E-FA08E876DC4D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5BC36D02-298C-4AFE-A63E-FA08E876DC4D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{DCAFFEED-89F9-4B75-BCD7-EEE6AA6A90DA} = {C9607F95-0E77-42C1-B792-447F30990B28}
-		{0E52667E-D2AE-4626-AF6C-A45228F3E7B2} = {C9607F95-0E77-42C1-B792-447F30990B28}
-		{2A2E7146-BEA3-4BCD-BC98-D17183EE793E} = {A0635F03-92EB-46F5-8E7F-35E0AC2517E7}
+		{84E90011-58E4-4943-A990-73AEB0769625} = {C9607F95-0E77-42C1-B792-447F30990B28}
+		{5BC36D02-298C-4AFE-A63E-FA08E876DC4D} = {A0635F03-92EB-46F5-8E7F-35E0AC2517E7}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {E360F4DB-93D9-4156-BC2F-F09618A35C92}
