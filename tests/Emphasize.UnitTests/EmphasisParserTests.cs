@@ -7,504 +7,292 @@ namespace Emphasize {
 
     public class EmphasisParserTests {
 
-
         [Fact]
         public void ReturnsEmptyCollectionForEmptyText() {
-            EmphasisParser target;
-            IEnumerable<EmphasisSpan> results;
-
-
-            target = new EmphasisParser();
-            results = target.Parse("");
-
-            Assert.Empty(results);
+            Assert.Empty(Parse(""));
         }
 
 
         [Fact]
         public void ReturnsEmptyCollectionForWhitespace() {
-            EmphasisParser target;
-            IEnumerable<EmphasisSpan> results;
-
-
-            target = new EmphasisParser();
-            results = target.Parse("    ");
-
-            Assert.Empty(results);
+            Assert.Empty(Parse("    "));
         }
 
 
         [Fact]
         public void ReturnsEmptyCollectionWhenThereAreNoMarkers() {
-            EmphasisParser target;
+            Assert.Empty(Parse("this has no markers"));
+        }
+
+
+        [Theory]
+        [MemberData(nameof(GetMarkerTypes))]
+        public void ReturnsSingleResultWhenMarkerCoversAllText(string marker, EmphasisType type) {
             IEnumerable<EmphasisSpan> results;
 
 
-            target = new EmphasisParser();
-            results = target.Parse("this has no markers");
+            results = Parse($"{marker}all covered{marker}");
 
-            Assert.Empty(results);
+            Assert.Equal(
+                new[] { new EmphasisSpan { StartOffset = 0, Length = 13, Type = type } },
+                results
+            );
         }
 
 
         [Theory]
         [MemberData(nameof(GetMarkerTypes))]
-        public void ReturnsSingleResultWhenMarkerCoversAllText(
-                string marker,
-                EmphasisType type
-            ) {
-
-            EmphasisParser target;
-            List<EmphasisSpan> results;
+        public void ReturnsSingleResultWhenMarkerIsAtStartOfText(string marker, EmphasisType type) {
+            IEnumerable<EmphasisSpan> results;
 
 
-            target = new EmphasisParser();
-            results = target.Parse($"{marker}all covered{marker}").ToList();
+            results = Parse($"{marker}this{marker} is marked");
 
-            Assert.Equal(1, results.Count);
-            Assert.Equal(0, results[0].StartOffset);
-            Assert.Equal(13, results[0].Length);
-            Assert.Equal(type, results[0].Type);
+            Assert.Equal(
+                new[] { new EmphasisSpan { StartOffset = 0, Length = 6, Type = type } },
+                results
+            );
         }
 
 
         [Theory]
         [MemberData(nameof(GetMarkerTypes))]
-        public void ReturnsSingleResultWhenMarkerIsAtStartOfText(
-                string marker,
-                EmphasisType type
-            ) {
-
-            EmphasisParser target;
-            List<EmphasisSpan> results;
+        public void ReturnsSingleResultWhenMarkerIsInMiddleOfText(string marker, EmphasisType type) {
+            IEnumerable<EmphasisSpan> results;
 
 
-            target = new EmphasisParser();
-            results = target.Parse($"{marker}this{marker} is marked").ToList();
+            results = Parse($"this {marker}is{marker} marked");
 
-            Assert.Equal(1, results.Count);
-            Assert.Equal(0, results[0].StartOffset);
-            Assert.Equal(6, results[0].Length);
-            Assert.Equal(type, results[0].Type);
+            Assert.Equal(
+                new[] { new EmphasisSpan { StartOffset = 5, Length = 4, Type = type } },
+                results
+            );
         }
 
 
         [Theory]
         [MemberData(nameof(GetMarkerTypes))]
-        public void ReturnsSingleResultWhenMarkerIsInMiddleOfText(
-                string marker,
-                EmphasisType type
-            ) {
-
-            EmphasisParser target;
-            List<EmphasisSpan> results;
+        public void ReturnsSingleResultWhenMarkerIsAtEndOfText(string marker, EmphasisType type) {
+            IEnumerable<EmphasisSpan> results;
 
 
-            target = new EmphasisParser();
-            results = target.Parse($"this {marker}is{marker} marked").ToList();
+            results = Parse($"this is {marker}marked text{marker}");
 
-            Assert.Equal(1, results.Count);
-            Assert.Equal(5, results[0].StartOffset);
-            Assert.Equal(4, results[0].Length);
-            Assert.Equal(type, results[0].Type);
+            Assert.Equal(
+                new[] { new EmphasisSpan { StartOffset = 8, Length = 13, Type = type } },
+                results
+            );
         }
 
 
-        [MemberData(nameof(GetMarkerTypes))]
         [Theory]
-        public void ReturnsSingleResultWhenMarkerIsAtEndOfText(
-                string marker,
-                EmphasisType type
-            ) {
-
-            EmphasisParser target;
-            List<EmphasisSpan> results;
-
-
-            target = new EmphasisParser();
-            results = target.Parse($"this is {marker}marked text{marker}").ToList();
-
-            Assert.Equal(1, results.Count);
-            Assert.Equal(8, results[0].StartOffset);
-            Assert.Equal(13, results[0].Length);
-            Assert.Equal(type, results[0].Type);
+        [MemberData(nameof(GetMarkers))]
+        public void IgnoresMarkersInMiddleOfWords(string marker) {
+            Assert.Empty(Parse($"mi{marker}dd{marker}le"));
         }
 
 
-        [MemberData(nameof(GetMarkerTypes))]
         [Theory]
-        public void IgnoresMarkersInMiddleOfWords(
-                string marker,
-                EmphasisType type
-            ) {
-
-            EmphasisParser target;
-            List<EmphasisSpan> results;
-
-
-            target = new EmphasisParser();
-            results = target.Parse($"mi{marker}dd{marker}le").ToList();
-
-            Assert.Equal(0, results.Count);
-        }
-
-
         [MemberData(nameof(GetMarkerTypesAndPunctuation))]
-        [Theory]
-        public void DetectsEndMarkerBeforePunctuation(
-                string marker,
-                EmphasisType type,
-                char punctuation
-            ) {
-
-            EmphasisParser target;
-            List<EmphasisSpan> results;
+        public void DetectsEndMarkerBeforePunctuation(string marker, EmphasisType type, char punctuation) {
+            IEnumerable<EmphasisSpan> results;
 
 
-            target = new EmphasisParser();
-            results = target.Parse($"this is {marker}marked{marker}{punctuation} and has punctuation").ToList();
+            results = Parse($"this is {marker}marked{marker}{punctuation} and has punctuation");
 
-            Assert.Equal(1, results.Count);
-            Assert.Equal(8, results[0].StartOffset);
-            Assert.Equal(8, results[0].Length);
-            Assert.Equal(type, results[0].Type);
+            Assert.Equal(
+                new[] { new EmphasisSpan { StartOffset = 8, Length = 8, Type = type } },
+                results
+            );
         }
 
 
+        [Theory]
         [MemberData(nameof(GetMarkerTypesAndOpeningBrackets))]
-        [Theory]
-        public void DetectsStartMarkerAfterBrackets(
-                string marker,
-                EmphasisType type,
-                char bracket
-            ) {
-
-            EmphasisParser target;
-            List<EmphasisSpan> results;
+        public void DetectsStartMarkerAfterBrackets(string marker, EmphasisType type, char bracket) {
+            IEnumerable<EmphasisSpan> results;
 
 
-            target = new EmphasisParser();
-            results = target.Parse($"this is {bracket}{marker}marked{marker} with brackets").ToList();
+            results = Parse($"this is {bracket}{marker}marked{marker} with brackets");
 
-            Assert.Equal(1, results.Count);
-            Assert.Equal(9, results[0].StartOffset);
-            Assert.Equal(8, results[0].Length);
-            Assert.Equal(type, results[0].Type);
+            Assert.Equal(
+                new[] { new EmphasisSpan { StartOffset = 9, Length = 8, Type = type } },
+                results
+            );
         }
 
 
+        [Theory]
         [MemberData(nameof(GetMarkerTypesAndClosingBrackets))]
-        [Theory]
-        public void DetectsEndMarkerBeforeBrackets(
-                string marker,
-                EmphasisType type,
-                char bracket
-            ) {
-
-            EmphasisParser target;
-            List<EmphasisSpan> results;
+        public void DetectsEndMarkerBeforeBrackets(string marker, EmphasisType type, char bracket) {
+            IEnumerable<EmphasisSpan> results;
 
 
-            target = new EmphasisParser();
-            results = target.Parse($"this is {marker}marked{marker}{bracket} with brackets").ToList();
+            results = Parse($"this is {marker}marked{marker}{bracket} with brackets");
 
-            Assert.Equal(1, results.Count);
-            Assert.Equal(8, results[0].StartOffset);
-            Assert.Equal(8, results[0].Length);
-            Assert.Equal(type, results[0].Type);
+            Assert.Equal(
+                new[] { new EmphasisSpan { StartOffset = 8, Length = 8, Type = type } },
+                results
+            );
         }
 
 
-        [MemberData(nameof(GetMarkerTypes))]
         [Theory]
-        public void ReturnsMultipleResultsWhenTextContainsMultipleMarkedSpans(
-                string marker,
-                EmphasisType type
-            ) {
-
-            EmphasisParser target;
-            List<EmphasisSpan> results;
+        [MemberData(nameof(GetMarkerTypes))]
+        public void ReturnsMultipleResultsWhenTextContainsMultipleMarkedSpans(string marker, EmphasisType type) {
+            IEnumerable<EmphasisSpan> results;
 
 
-            target = new EmphasisParser();
-            results = target.Parse($"this {marker}is{marker} marked {marker}and{marker} so is this").ToList();
+            results = Parse($"this {marker}is{marker} marked {marker}and{marker} so is this");
 
-            Assert.Equal(2, results.Count);
-
-            Assert.Equal(5, results[0].StartOffset);
-            Assert.Equal(4, results[0].Length);
-            Assert.Equal(type, results[0].Type);
-
-            Assert.Equal(17, results[1].StartOffset);
-            Assert.Equal(5, results[1].Length);
-            Assert.Equal(type, results[1].Type);
+            Assert.Equal(
+                new[] {
+                    new  EmphasisSpan {StartOffset = 5, Length = 4, Type = type },
+                    new  EmphasisSpan {StartOffset = 17, Length = 5, Type = type }
+                },
+                results
+            );
         }
 
 
         [Fact]
         public void ReturnsMultipleResultsWhenTextContainsSpansOfDifferentTypes() {
-            EmphasisParser target;
-            List<EmphasisSpan> results;
+            IEnumerable<EmphasisSpan> results;
 
 
-            target = new EmphasisParser();
-            results = target.Parse("this *is* marked _and_ so `is` this").ToList();
+            results = Parse("this *is* marked _and_ so `is` this");
 
-            Assert.Equal(3, results.Count);
-
-            Assert.Equal(5, results[0].StartOffset);
-            Assert.Equal(4, results[0].Length);
-            Assert.Equal(EmphasisType.Bold, results[0].Type);
-
-            Assert.Equal(17, results[1].StartOffset);
-            Assert.Equal(5, results[1].Length);
-            Assert.Equal(EmphasisType.Italic, results[1].Type);
-
-            Assert.Equal(26, results[2].StartOffset);
-            Assert.Equal(4, results[2].Length);
-            Assert.Equal(EmphasisType.Code, results[2].Type);
+            Assert.Equal(
+                new[] {
+                    new EmphasisSpan{ StartOffset = 5, Length = 4, Type = EmphasisType.Bold },
+                    new EmphasisSpan{ StartOffset = 17, Length = 5, Type = EmphasisType.Italic },
+                    new EmphasisSpan{ StartOffset = 26, Length = 4, Type = EmphasisType.Code }
+                },
+                results
+            );
         }
 
 
-        [MemberData(nameof(GetMarkerTypes))]
         [Theory]
-        public void IgnoresMarkersThatStartMidWord(
-                string marker,
-                string type
-            ) {
-
-            EmphasisParser target;
-            List<EmphasisSpan> results;
-
-
-            target = new EmphasisParser();
-            results = target.Parse($"wo{marker}rd{marker}").ToList();
-
-            Assert.Equal(0, results.Count);
+        [MemberData(nameof(GetMarkers))]
+        public void IgnoresMarkersThatStartMidWord(string marker) {
+            Assert.Empty(Parse($"wo{marker}rd{marker}"));
         }
 
 
-        [MemberData(nameof(GetMarkerTypes))]
         [Theory]
-        public void IgnoresMarkersThatStartWithinWhitespace(
-                string marker,
-                string type
-            ) {
-
-            EmphasisParser target;
-            List<EmphasisSpan> results;
-
-
-            target = new EmphasisParser();
-            results = target.Parse($"this {marker} is not{marker} marked").ToList();
-
-            Assert.Equal(0, results.Count);
+        [MemberData(nameof(GetMarkers))]
+        public void IgnoresMarkersThatStartWithinWhitespace(string marker) {
+            Assert.Empty(Parse($"this {marker} is not{marker} marked"));
         }
 
 
-        [MemberData(nameof(GetMarkerTypes))]
         [Theory]
-        public void IgnoresMarkersThatEndWithinWhitespace(
-                string marker,
-                string type
-            ) {
-
-            EmphasisParser target;
-            List<EmphasisSpan> results;
-
-
-            target = new EmphasisParser();
-            results = target.Parse($"this {marker}is not {marker} marked").ToList();
-
-            Assert.Equal(0, results.Count);
+        [MemberData(nameof(GetMarkers))]
+        public void IgnoresMarkersThatEndWithinWhitespace(string marker) {
+            Assert.Empty(Parse($"this {marker}is not {marker} marked"));
         }
 
 
-        [MemberData(nameof(GetMarkerTypes))]
         [Theory]
-        public void IgnoresMarkersThatStartAndEndWithinWhitespace(
-                string marker,
-                string type
-            ) {
-
-            EmphasisParser target;
-            List<EmphasisSpan> results;
-
-
-            target = new EmphasisParser();
-            results = target.Parse($"this {marker} is not {marker} marked").ToList();
-
-            Assert.Equal(0, results.Count);
+        [MemberData(nameof(GetMarkers))]
+        public void IgnoresMarkersThatStartAndEndWithinWhitespace(string marker) {
+            Assert.Empty(Parse($"this {marker} is not {marker} marked"));
         }
 
-
-        [MemberData(nameof(GetMarkerTypes))]
         [Theory]
-        public void DoesNotProduceSpanWhenEndMarkerNotFound(
-                string marker,
-                string type
-            ) {
-
-            EmphasisParser target;
-            List<EmphasisSpan> results;
-
-
-            target = new EmphasisParser();
-            results = target.Parse($"{marker}word").ToList();
-
-            Assert.Equal(0, results.Count);
+        [MemberData(nameof(GetMarkers))]
+        public void DoesNotProduceSpanWhenEndMarkerNotFound(string marker) {
+            Assert.Empty(Parse($"{marker}word"));
         }
 
 
         [Fact]
         public void ProducesSpansOfCombinedTypesWhenDifferentTypesAreNested() {
-            EmphasisParser target;
-            List<EmphasisSpan> results;
-            int index;
+            IEnumerable<EmphasisSpan> results;
 
 
-            target = new EmphasisParser();
-            results = target.Parse($"this has *_`mixed`_* types").ToList();
+            results = Parse($"this has *_`mixed`_* types");
 
-            Assert.Equal(5, results.Count);
-            index = 0;
-
-            Assert.Equal(9, results[index].StartOffset);
-            Assert.Equal(1, results[index].Length);
-            Assert.Equal(EmphasisType.Bold, results[index].Type);
-            index += 1;
-
-            Assert.Equal(10, results[index].StartOffset);
-            Assert.Equal(1, results[index].Length);
-            Assert.Equal(EmphasisType.Bold | EmphasisType.Italic, results[index].Type);
-            index += 1;
-
-            Assert.Equal(11, results[index].StartOffset);
-            Assert.Equal(7, results[index].Length);
-            Assert.Equal(EmphasisType.Bold | EmphasisType.Italic | EmphasisType.Code, results[index].Type);
-            index += 1;
-
-            Assert.Equal(18, results[index].StartOffset);
-            Assert.Equal(1, results[index].Length);
-            Assert.Equal(EmphasisType.Bold | EmphasisType.Italic, results[index].Type);
-            index += 1;
-
-            Assert.Equal(19, results[index].StartOffset);
-            Assert.Equal(1, results[index].Length);
-            Assert.Equal(EmphasisType.Bold, results[index].Type);
+            Assert.Equal(
+                new[] {
+                    new EmphasisSpan { StartOffset = 9, Length = 1, Type = EmphasisType.Bold },
+                    new EmphasisSpan { StartOffset = 10, Length = 1, Type = EmphasisType.Bold | EmphasisType.Italic },
+                    new EmphasisSpan { StartOffset = 11, Length = 7, Type = EmphasisType.Bold | EmphasisType.Italic | EmphasisType.Code },
+                    new EmphasisSpan { StartOffset = 18, Length = 1, Type = EmphasisType.Bold | EmphasisType.Italic },
+                    new EmphasisSpan { StartOffset = 19, Length = 1, Type = EmphasisType.Bold }
+                },
+                results
+            );
         }
 
 
         [Fact]
         public void ProducesSpansOfCombinedTypesWhenDifferentTypesOverlap() {
-            EmphasisParser target;
-            List<EmphasisSpan> results;
-            int index;
+            IEnumerable<EmphasisSpan> results;
 
 
-            target = new EmphasisParser();
-            results = target.Parse("this *has _mixed `span* types_ that *overlap` with* all _possible_ combinations").ToList();
-            //                           bbbbbbbbbbbbbbbbbb             bbbbbbbbbbbbbbb
-            //                                iiiiiiiiiiiiiiiiiiii                          iiiiiiiiii
-            //                                       cccccccccccccccccccccccccccc
+            results = Parse("this *has _mixed `span* types_ that *overlap` with* all _possible_ combinations");
+            //                    bbbbbbbbbbbbbbbbbb             bbbbbbbbbbbbbbb
+            //                         iiiiiiiiiiiiiiiiiiii                          iiiiiiiiii
+            //                                cccccccccccccccccccccccccccc
 
-            Assert.Equal(8, results.Count);
-            index = 0;
-
-            Assert.Equal(5, results[index].StartOffset);
-            Assert.Equal(5, results[index].Length);
-            Assert.Equal(EmphasisType.Bold, results[index].Type);
-            index += 1;
-
-            Assert.Equal(10, results[index].StartOffset);
-            Assert.Equal(7, results[index].Length);
-            Assert.Equal(EmphasisType.Bold | EmphasisType.Italic, results[index].Type);
-            index += 1;
-
-            Assert.Equal(17, results[index].StartOffset);
-            Assert.Equal(6, results[index].Length);
-            Assert.Equal(EmphasisType.Bold | EmphasisType.Italic | EmphasisType.Code, results[index].Type);
-            index += 1;
-
-            Assert.Equal(23, results[index].StartOffset);
-            Assert.Equal(7, results[index].Length);
-            Assert.Equal(EmphasisType.Italic | EmphasisType.Code, results[index].Type);
-            index += 1;
-
-            Assert.Equal(30, results[index].StartOffset);
-            Assert.Equal(6, results[index].Length);
-            Assert.Equal(EmphasisType.Code, results[index].Type);
-            index += 1;
-
-            Assert.Equal(36, results[index].StartOffset);
-            Assert.Equal(9, results[index].Length);
-            Assert.Equal(EmphasisType.Bold | EmphasisType.Code, results[index].Type);
-            index += 1;
-
-            Assert.Equal(45, results[index].StartOffset);
-            Assert.Equal(6, results[index].Length);
-            Assert.Equal(EmphasisType.Bold, results[index].Type);
-            index += 1;
-
-            Assert.Equal(56, results[index].StartOffset);
-            Assert.Equal(10, results[index].Length);
-            Assert.Equal(EmphasisType.Italic, results[index].Type);
+            Assert.Equal(
+                new[] {
+                    new EmphasisSpan { StartOffset = 5, Length = 5, Type = EmphasisType.Bold },
+                    new EmphasisSpan { StartOffset = 10, Length = 7, Type = EmphasisType.Bold | EmphasisType.Italic },
+                    new EmphasisSpan { StartOffset = 17, Length = 6, Type = EmphasisType.Bold | EmphasisType.Italic | EmphasisType.Code },
+                    new EmphasisSpan { StartOffset = 23, Length = 7, Type = EmphasisType.Italic | EmphasisType.Code },
+                    new EmphasisSpan { StartOffset = 30, Length = 6, Type = EmphasisType.Code },
+                    new EmphasisSpan { StartOffset = 36, Length = 9, Type = EmphasisType.Bold | EmphasisType.Code },
+                    new EmphasisSpan { StartOffset = 45, Length = 6, Type = EmphasisType.Bold },
+                    new EmphasisSpan { StartOffset = 56, Length = 10, Type = EmphasisType.Italic }
+                },
+                results
+            );
         }
 
 
         [Fact]
         public void IgnoresUnclosedSpansThatOverlapWithClosedSpans() {
-            EmphasisParser target;
-            List<EmphasisSpan> results;
+            IEnumerable<EmphasisSpan> results;
 
 
-            target = new EmphasisParser();
-            results = target.Parse("this *has _unclosed spans*").ToList();
+            results = Parse("this *has _unclosed spans*");
 
-            Assert.Equal(1, results.Count);
-
-            Assert.Equal(5, results[0].StartOffset);
-            Assert.Equal(21, results[0].Length);
-            Assert.Equal(EmphasisType.Bold, results[0].Type);
+            Assert.Equal(
+                new[] { new EmphasisSpan { StartOffset = 5, Length = 21, Type = EmphasisType.Bold } },
+                results
+            );
         }
 
 
-        [MemberData(nameof(GetMarkerTypes))]
         [Theory]
-        public void ReturnsCompletedSpansWhenThereAreIncompleteSpans(
-                string marker,
-                EmphasisType type
-            ) {
-
-            EmphasisParser target;
-            List<EmphasisSpan> results;
+        [MemberData(nameof(GetMarkerTypes))]
+        public void ReturnsCompletedSpansWhenThereAreIncompleteSpans(string marker, EmphasisType type) {
+            IEnumerable<EmphasisSpan> results;
 
 
-            target = new EmphasisParser();
-            results = target.Parse($"this {marker}comment{marker} is {marker}incomplete").ToList();
+            results = Parse($"this {marker}comment{marker} is {marker}incomplete");
 
-            Assert.Equal(1, results.Count);
-
-            Assert.Equal(5, results[0].StartOffset);
-            Assert.Equal(9, results[0].Length);
-            Assert.Equal(type, results[0].Type);
+            Assert.Equal(
+                new[] { new EmphasisSpan { StartOffset = 5, Length = 9, Type = type } },
+                results
+            );
         }
 
 
         [Fact]
         public void SupportsCStyleComments() {
-            EmphasisParser target;
-            List<EmphasisSpan> results;
+            IEnumerable<EmphasisSpan> results;
 
 
-            target = new EmphasisParser();
-            results = target.Parse("/* this is a *c-style* comment */").ToList();
+            results = Parse("/* this is a *c-style* comment */");
 
-            Assert.Equal(1, results.Count);
-
-            Assert.Equal(13, results[0].StartOffset);
-            Assert.Equal(9, results[0].Length);
-            Assert.Equal(EmphasisType.Bold, results[0].Type);
+            Assert.Equal(
+                new[] { new EmphasisSpan { StartOffset = 13, Length = 9, Type = EmphasisType.Bold } },
+                results
+            );
         }
 
 
@@ -512,6 +300,13 @@ namespace Emphasize {
             yield return new object[] { "*", EmphasisType.Bold };
             yield return new object[] { "_", EmphasisType.Italic };
             yield return new object[] { "`", EmphasisType.Code };
+        }
+
+
+        public static IEnumerable<object[]> GetMarkers() {
+            foreach (var item in GetMarkerTypes()) {
+                yield return new object[] { item[0] };
+            }
         }
 
 
@@ -541,6 +336,10 @@ namespace Emphasize {
             }
         }
 
+
+        private static IEnumerable<EmphasisSpan> Parse(string text) {
+            return new EmphasisParser().Parse(text);
+        }
 
     }
 
