@@ -14,10 +14,10 @@ jobs:
 
         steps:
             - name: Checkout
-              uses: actions/checkout@v2
+              uses: actions/checkout@v4
 
             - name: Setup MSBuild
-              uses: microsoft/setup-msbuild@v1.0.2
+              uses: microsoft/setup-msbuild@v2
               with:
                   vs-version: "[16.9,17.0)"
 
@@ -28,7 +28,7 @@ jobs:
               run: msbuild tests/Emphasize.UnitTests /t:Test /v:Minimal
 
             - name: Publish
-              uses: cezarypiatek/VsixPublisherAction@0.2
+              uses: cezarypiatek/VsixPublisherAction@1.1
               with:
                   extension-file: source\Emphasize\bin\Release\Emphasize.vsix
                   publish-manifest-file: publish.json
