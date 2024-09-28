@@ -12,11 +12,10 @@ namespace Emphasize.FormatDefinitions {
     [UserVisible(true)]
     public class BoldCode : ClassificationFormatDefinition {
 
-        public const string Name = "Comment - Bold, Code Span";
+        public const string Name = "Emphasize - Bold, Code";
 
 
         [Export(typeof(ClassificationTypeDefinition))]
-        [BaseDefinition("Comment")]
         [Name(Name)]
         public static readonly ClassificationTypeDefinition ClassificationType;
 

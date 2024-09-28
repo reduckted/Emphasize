@@ -46,8 +46,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="CommentTagger.cs" />
-    <Compile Include="CommentTaggerProvider.cs" />
+    <Compile Include="Tagger.cs" />
+    <Compile Include="TaggerProvider.cs" />
     <Compile Include="EmphasisParser.cs" />
     <Compile Include="EmphasisSpan.cs" />
     <Compile Include="EmphasisType.cs" />

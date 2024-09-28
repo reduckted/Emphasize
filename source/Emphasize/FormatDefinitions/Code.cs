@@ -13,11 +13,10 @@ namespace Emphasize.FormatDefinitions {
     [UserVisible(true)]
     public class Code : ClassificationFormatDefinition {
 
-        public const string Name = "Comment - Code Span";
+        public const string Name = "Emphasize - Code";
 
 
         [Export(typeof(ClassificationTypeDefinition))]
-        [BaseDefinition("Comment")]
         [Name(Name)]
         public static readonly ClassificationTypeDefinition ClassificationType;
 
@@ -30,12 +29,12 @@ namespace Emphasize.FormatDefinitions {
 
 
         internal static Brush CreateBackgroundBrush() {
-            return new SolidColorBrush(Color.FromRgb(0, 128, 0));
+            return new SolidColorBrush(Color.FromRgb(128, 128, 128));
         }
 
 
         internal static double GetBackgroundOpacity() {
-            return 0.1;
+            return 0.15;
         }
 
     }

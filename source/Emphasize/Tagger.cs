@@ -7,16 +7,14 @@ using System.Linq;
 
 namespace Emphasize {
 
-    public class CommentTagger : ITagger<ClassificationTag> {
+    public class Tagger : ITagger<ClassificationTag> {
 
         private readonly IClassificationTypeRegistryService _registry;
-        private readonly ITagAggregator<IClassificationTag> _aggregator;
         private readonly EmphasisParser _parser;
 
 
-        public CommentTagger(IClassificationTypeRegistryService registry, ITagAggregator<IClassificationTag> aggregator, EmphasisParser parser) {
+        public Tagger(IClassificationTypeRegistryService registry, EmphasisParser parser) {
             _registry = registry;
-            _aggregator = aggregator;
             _parser = parser;
         }
 
@@ -26,48 +24,34 @@ namespace Emphasize {
 
         public IEnumerable<ITagSpan<ClassificationTag>> GetTags(NormalizedSnapshotSpanCollection spans) {
             return (
-                from span in spans.AsEnumerable()
-                from mappingTag in _aggregator.GetTags(span)
-                where IsCommentSpan(mappingTag)
-                let normalizedSnapshotSpans = mappingTag.Span.GetSpans(span.Snapshot)
-                from tagSpan in GetTagSpansFromSnapshotSpans(normalizedSnapshotSpans)
+                from span in spans
+                from tagSpan in GetTagSpansFromSnapshotSpan(span)
                 select tagSpan
             ).ToList();
         }
 
 
-        private IEnumerable<ITagSpan<ClassificationTag>> GetTagSpansFromSnapshotSpans(NormalizedSnapshotSpanCollection normalizedSnapshotSpans) {
-            foreach (var span in normalizedSnapshotSpans) {
-                string text;
+        private IEnumerable<ITagSpan<ClassificationTag>> GetTagSpansFromSnapshotSpan(SnapshotSpan span) {
+            string text;
 
 
-                text = span.Snapshot.GetText(span);
+            text = span.GetText();
 
-                if (!string.IsNullOrWhiteSpace(text)) {
-                    foreach (EmphasisSpan item in _parser.Parse(text)) {
-                        IClassificationType classification;
+            if (!string.IsNullOrWhiteSpace(text)) {
+                foreach (EmphasisSpan item in _parser.Parse(text)) {
+                    IClassificationType classification;
 
 
-                        classification = GetClassificationForType(item.Type);
+                    classification = GetClassificationForType(item.Type);
 
-                        if (classification != null) {
-                            yield return new TagSpan<ClassificationTag>(
-                                new SnapshotSpan(span.Snapshot, span.Start.Add(item.StartOffset), item.Length), 
-                                new ClassificationTag(classification)
-                            );
-                        }
+                    if (classification != null) {
+                        yield return new TagSpan<ClassificationTag>(
+                            new SnapshotSpan(span.Snapshot, span.Start.Add(item.StartOffset), item.Length),
+                            new ClassificationTag(classification)
+                        );
                     }
                 }
             }
-        }
-
-
-        private bool IsCommentSpan(IMappingTagSpan<IClassificationTag> mappingTag) {
-            return mappingTag
-                .Tag
-                .ClassificationType
-                .Classification
-                .IndexOf("comment", StringComparison.OrdinalIgnoreCase) >= 0;
         }
 
 

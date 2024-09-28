@@ -26,8 +26,8 @@ namespace Emphasize {
 
         [Theory]
         [MemberData(nameof(GetFormatDefinitionTypes))]
-        public void AllDefinitionNamesStartWithComment(Type type) {
-            Assert.StartsWith("Comment - ", GetName(type));
+        public void AllDefinitionNamesStartWithEmphasize(Type type) {
+            Assert.StartsWith("Emphasize - ", GetName(type));
         }
 
 

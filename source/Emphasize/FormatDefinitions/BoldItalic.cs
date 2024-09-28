@@ -12,11 +12,10 @@ namespace Emphasize.FormatDefinitions {
     [UserVisible(true)]
     public class BoldItalic : ClassificationFormatDefinition {
 
-        public const string Name = "Comment - Bold, Italic Span";
+        public const string Name = "Emphasize - Bold, Italic";
 
 
         [Export(typeof(ClassificationTypeDefinition))]
-        [BaseDefinition("Comment")]
         [Name(Name)]
         public static readonly ClassificationTypeDefinition ClassificationType;
 
