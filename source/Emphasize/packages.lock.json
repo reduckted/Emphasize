@@ -1,7 +1,7 @@
 {
   "version": 2,
   "dependencies": {
-    ".NETFramework,Version=v4.7.2": {
+    ".NETFramework,Version=v4.8": {
       "Microsoft.VisualStudio.SDK": {
         "type": "Direct",
         "requested": "[15.0.1, )",
@@ -632,6 +632,7 @@
         "resolved": "17.7.47",
         "contentHash": "dP4SOup0OMy8s1cTD4oYXlLd6JrDb8Gp4+1fR+vUuvgLDSuGFWS/8B23GQ670NICw5AadUUK9T9sCvYmpW8/Ig=="
       }
-    }
+    },
+    ".NETFramework,Version=v4.8/win-x64": {}
   }
 }
