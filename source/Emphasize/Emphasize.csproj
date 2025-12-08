@@ -1,13 +1,11 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <CustomAfterMicrosoftCSharpTargets Condition="$(VsSDKInstall) != ''">$(VsSDKInstall)\Microsoft.VsSDK.targets</CustomAfterMicrosoftCSharpTargets>
   </PropertyGroup>
 
   <PropertyGroup>
-    <RootNamespace>Emphasize</RootNamespace>
     <AssemblyName>Emphasize</AssemblyName>
-    <TargetFramework>net46</TargetFramework>
   </PropertyGroup>
   
   <PropertyGroup>
