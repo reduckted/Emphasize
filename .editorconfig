@@ -1,5 +1,8 @@
 root = true
 
+[*.yml]
+tab_size = 2
+
 [*.cs]
 
 # IDE0290: Use primary constructor
