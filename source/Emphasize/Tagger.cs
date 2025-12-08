@@ -1,3 +1,5 @@
+#nullable enable
+
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Text.Tagging;
@@ -25,7 +27,10 @@ namespace Emphasize {
         }
 
 
-        public event EventHandler<SnapshotSpanEventArgs> TagsChanged;
+        public event EventHandler<SnapshotSpanEventArgs>? TagsChanged {
+            add { }
+            remove { }
+        }
 
 
         public IEnumerable<ITagSpan<ClassificationTag>> GetTags(NormalizedSnapshotSpanCollection spans) {
@@ -57,12 +62,12 @@ namespace Emphasize {
 
             if (!string.IsNullOrWhiteSpace(text)) {
                 foreach (EmphasisSpan item in _parser.Parse(text)) {
-                    IClassificationType classification;
+                    IClassificationType? classification;
 
 
                     classification = GetClassificationForType(item.Type);
 
-                    if (classification != null) {
+                    if (classification is not null) {
                         yield return new TagSpan<ClassificationTag>(
                             new SnapshotSpan(span.Snapshot, span.Start.Add(item.StartOffset), item.Length),
                             new ClassificationTag(classification)
@@ -73,34 +78,17 @@ namespace Emphasize {
         }
 
 
-        private IClassificationType GetClassificationForType(EmphasisType type) {
-            switch (type) {
-                case EmphasisType.Bold:
-                    return _registry.GetClassificationType(FormatDefinitions.Bold.Name);
-
-                case EmphasisType.Italic:
-                    return _registry.GetClassificationType(FormatDefinitions.Italic.Name);
-
-                case EmphasisType.Code:
-                    return _registry.GetClassificationType(FormatDefinitions.Code.Name);
-
-                case EmphasisType.Bold | EmphasisType.Italic:
-                    return _registry.GetClassificationType(FormatDefinitions.BoldItalic.Name);
-
-                case EmphasisType.Bold | EmphasisType.Code:
-                    return _registry.GetClassificationType(FormatDefinitions.BoldCode.Name);
-
-                case EmphasisType.Italic | EmphasisType.Code:
-                    return _registry.GetClassificationType(FormatDefinitions.ItalicCode.Name);
-
-                case EmphasisType.Bold | EmphasisType.Italic | EmphasisType.Code:
-                    return _registry.GetClassificationType(FormatDefinitions.BoldItalicCode.Name);
-
-                default:
-                    return null;
-
-            }
-
+        private IClassificationType? GetClassificationForType(EmphasisType type) {
+            return (type) switch {
+                EmphasisType.Bold => _registry.GetClassificationType(FormatDefinitions.Bold.Name),
+                EmphasisType.Italic => _registry.GetClassificationType(FormatDefinitions.Italic.Name),
+                EmphasisType.Code => _registry.GetClassificationType(FormatDefinitions.Code.Name),
+                EmphasisType.Bold | EmphasisType.Italic => _registry.GetClassificationType(FormatDefinitions.BoldItalic.Name),
+                EmphasisType.Bold | EmphasisType.Code => _registry.GetClassificationType(FormatDefinitions.BoldCode.Name),
+                EmphasisType.Italic | EmphasisType.Code => _registry.GetClassificationType(FormatDefinitions.ItalicCode.Name),
+                EmphasisType.Bold | EmphasisType.Italic | EmphasisType.Code => _registry.GetClassificationType(FormatDefinitions.BoldItalicCode.Name),
+                _ => null
+            };
         }
 
     }

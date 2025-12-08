@@ -1,3 +1,5 @@
+#nullable enable
+
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Text.Editor;
@@ -13,7 +15,7 @@ namespace Emphasize {
     [TagType(typeof(ClassificationTag))]
     public class TaggerProvider : IViewTaggerProvider {
 
-        private static readonly object TaggerProperty = new object();
+        private static readonly object TaggerProperty = new();
 
 
         private readonly IClassificationTypeRegistryService _classificationRegistry;
@@ -34,7 +36,7 @@ namespace Emphasize {
         }
 
 
-        public ITagger<T> CreateTagger<T>(ITextView textView, ITextBuffer buffer) where T : ITag {
+        public ITagger<T>? CreateTagger<T>(ITextView textView, ITextBuffer buffer) where T : ITag {
             if (_creatingInnerTagAggregator) {
                 return null;
             }

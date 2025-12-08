@@ -1,4 +1,6 @@
-﻿using Microsoft.VisualStudio.Text.Classification;
+﻿#nullable enable
+
+using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Utilities;
 using System.ComponentModel.Composition;
 
@@ -17,7 +19,7 @@ namespace Emphasize.FormatDefinitions {
 
         [Export(typeof(ClassificationTypeDefinition))]
         [Name(Name)]
-        public static readonly ClassificationTypeDefinition ClassificationType;
+        public static readonly ClassificationTypeDefinition? ClassificationType;
 
 
         public BoldCode() {

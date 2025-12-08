@@ -1,4 +1,6 @@
-﻿using Microsoft.VisualStudio.Text.Classification;
+﻿#nullable enable
+
+using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Utilities;
 using System.ComponentModel.Composition;
 
@@ -8,7 +10,7 @@ namespace Emphasize.FormatDefinitions {
     [ClassificationType(ClassificationTypeNames = Name)]
     [Export(typeof(EditorFormatDefinition))]
     [Name(Name)]
-    [Order(After= Priority.High)]
+    [Order(After = Priority.High)]
     [UserVisible(true)]
     public class BoldItalic : ClassificationFormatDefinition {
 
@@ -17,7 +19,7 @@ namespace Emphasize.FormatDefinitions {
 
         [Export(typeof(ClassificationTypeDefinition))]
         [Name(Name)]
-        public static readonly ClassificationTypeDefinition ClassificationType;
+        public static readonly ClassificationTypeDefinition? ClassificationType;
 
 
         public BoldItalic() {

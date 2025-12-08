@@ -5,6 +5,7 @@
     <File Path="publish.json" />
   </Folder>
   <Folder Name="/.solution/">
+    <File Path=".editorconfig" />
     <File Path=".gitignore" />
     <File Path="Directory.Build.props" />
     <File Path="Directory.Packages.props" />
