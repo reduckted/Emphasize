@@ -1,0 +1,21 @@
+<Solution>
+  <Folder Name="/.github/" />
+  <Folder Name="/.github/workflows/">
+    <File Path=".github/workflows/ci.yml" />
+    <File Path="publish.json" />
+  </Folder>
+  <Folder Name="/.solution/">
+    <File Path=".gitignore" />
+    <File Path="Directory.Build.props" />
+    <File Path="Directory.Packages.props" />
+    <File Path="LICENSE" />
+    <File Path="publish.json" />
+    <File Path="README.md" />
+  </Folder>
+  <Folder Name="/source/">
+    <Project Path="source/Emphasize/Emphasize.csproj" Id="84e90011-58e4-4943-a990-73aeb0769625" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Emphasize.UnitTests/Emphasize.UnitTests.csproj" />
+  </Folder>
+</Solution>
