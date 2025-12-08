@@ -28,6 +28,6 @@ jobs:
       - name: Publish
         uses: cezarypiatek/VsixPublisherAction@1.1
         with:
-          extension-file: source\Emphasize\bin\Release\Emphasize.vsix
+          extension-file: source\Emphasize\bin\Release\win-x64\Emphasize.vsix
           publish-manifest-file: publish.json
           personal-access-code: ${{ secrets.PUBLISHER_TOKEN }}
