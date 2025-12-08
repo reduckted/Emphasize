@@ -1,4 +1,4 @@
-﻿using Microsoft.VisualStudio.Text;
+using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Text.Tagging;
 using System;
@@ -10,11 +10,17 @@ namespace Emphasize {
     public class Tagger : ITagger<ClassificationTag> {
 
         private readonly IClassificationTypeRegistryService _registry;
+        private readonly ITagAggregator<IClassificationTag> _aggregator;
         private readonly EmphasisParser _parser;
 
 
-        public Tagger(IClassificationTypeRegistryService registry, EmphasisParser parser) {
+        public Tagger(
+            IClassificationTypeRegistryService registry,
+            ITagAggregator<IClassificationTag> aggregator,
+            EmphasisParser parser
+        ) {
             _registry = registry;
+            _aggregator = aggregator;
             _parser = parser;
         }
 
@@ -25,13 +31,25 @@ namespace Emphasize {
         public IEnumerable<ITagSpan<ClassificationTag>> GetTags(NormalizedSnapshotSpanCollection spans) {
             return (
                 from span in spans
-                from tagSpan in GetTagSpansFromSnapshotSpan(span)
+                from mappingTag in _aggregator.GetTags(spans)
+                where IsCommentSpan(mappingTag)
+                from mappingSpan in mappingTag.Span.GetSpans(mappingTag.Span.AnchorBuffer.CurrentSnapshot)
+                from tagSpan in GetTagSpans(mappingSpan)
                 select tagSpan
             ).ToList();
         }
 
 
-        private IEnumerable<ITagSpan<ClassificationTag>> GetTagSpansFromSnapshotSpan(SnapshotSpan span) {
+        private static bool IsCommentSpan(IMappingTagSpan<IClassificationTag> mappingTag) {
+            return mappingTag
+                .Tag
+                .ClassificationType
+                .Classification
+                .IndexOf("comment", StringComparison.OrdinalIgnoreCase) >= 0;
+        }
+
+
+        private IEnumerable<ITagSpan<ClassificationTag>> GetTagSpans(SnapshotSpan span) {
             string text;
 
 
