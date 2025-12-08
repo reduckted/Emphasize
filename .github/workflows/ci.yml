@@ -1,32 +1,31 @@
 name: Continuous Integration
 
 on:
-    push:
-        branches:
-            - master
-        tags-ignore:
-            - "**"
+  push:
+    branches:
+      - master
+    tags-ignore:
+      - "**"
 
-    pull_request:
-        types: [opened, synchronize, edited]
+  pull_request:
 
 jobs:
-    build:
-        runs-on: windows-latest
+  build:
+    runs-on: windows-latest
 
-        env:
-            Configuration: Release
-            DeployExtension: false
+    env:
+      Configuration: Release
+      DeployExtension: false
 
-        steps:
-            - name: Checkout
-              uses: actions/checkout@v4
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
 
-            - name: Setup MSBuild
-              uses: microsoft/setup-msbuild@v2
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v2
 
-            - name: Build
-              run: msbuild /t:Rebuild /Restore /v:Minimal
+      - name: Build
+        run: msbuild /t:Rebuild /Restore /v:Minimal
 
-            - name: Test
-              run: msbuild tests/Emphasize.UnitTests /t:Test /v:Minimal
+      - name: Test
+        run: msbuild tests/Emphasize.UnitTests /t:Test /v:Minimal

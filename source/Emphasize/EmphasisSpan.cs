@@ -1,4 +1,6 @@
-﻿namespace Emphasize {
+﻿#nullable enable
+
+namespace Emphasize {
 
     public struct EmphasisSpan {
 

@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿#nullable enable
+
+using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Linq;
 
@@ -7,9 +9,9 @@ namespace Emphasize {
     [Export]
     public class EmphasisParser {
 
-        private static readonly HashSet<char> OpeningBrackets = new HashSet<char>() { '{', '[', '<', '(' };
-        private static readonly HashSet<char> ClosingBrackets = new HashSet<char>() { '}', ']', '>', ')' };
-        private static readonly Dictionary<char, EmphasisType> Markers = new Dictionary<char, EmphasisType> {
+        private static readonly HashSet<char> OpeningBrackets = ['{', '[', '<', '('];
+        private static readonly HashSet<char> ClosingBrackets = ['}', ']', '>', ')'];
+        private static readonly Dictionary<char, EmphasisType> Markers = new() {
             {'*', EmphasisType.Bold},
             {'_', EmphasisType.Italic},
             {'`', EmphasisType.Code }
@@ -17,8 +19,8 @@ namespace Emphasize {
 
 
         public IEnumerable<EmphasisSpan> Parse(string text) {
-            List<EmphasisSpan> spans = null;
-            Dictionary<EmphasisType, int> typeStartIndexes = null;
+            List<EmphasisSpan>? spans = null;
+            Dictionary<EmphasisType, int>? typeStartIndexes = null;
             EmphasisType currentSpanType;
             int startIndex;
 
@@ -39,9 +41,7 @@ namespace Emphasize {
                         // is possibly a closing marker. Check that it can be a
                         // closing marker, and if it can be, end the current span.
                         if (CanBeEndMarker(text, i, markerType, currentSpanType)) {
-                            if (spans is null) {
-                                spans = new List<EmphasisSpan>();
-                            }
+                            spans ??= [];
 
                             // Add a span that ends at the current index.
                             spans.Add(
@@ -60,7 +60,7 @@ namespace Emphasize {
                             // Also remove the marker type from the tracking
                             // collection of start indexes. This marker has closed,
                             // so we don't need to remember where it starts.
-                            typeStartIndexes.Remove(markerType);
+                            typeStartIndexes?.Remove(markerType);
                         }
 
                     } else {
@@ -69,9 +69,7 @@ namespace Emphasize {
                         // and if it can be, end the current span and start a new one.
                         if (CanBeStartMarker(text, i, markerType, currentSpanType)) {
                             if (currentSpanType != EmphasisType.None) {
-                                if (spans is null) {
-                                    spans = new List<EmphasisSpan>();
-                                }
+                                spans ??= [];
 
                                 // Add a span that ends before the current index.
                                 spans.Add(
@@ -88,10 +86,7 @@ namespace Emphasize {
 
                             // Record where this marker type started so that we can remove
                             // it from the other spans if it doesn't have a closing marker.
-                            if (typeStartIndexes is null) {
-                                typeStartIndexes = new Dictionary<EmphasisType, int>();
-                            }
-
+                            typeStartIndexes ??= [];
                             typeStartIndexes[markerType] = i;
                         }
                     }
@@ -101,8 +96,8 @@ namespace Emphasize {
             // If there are any unclosed markers, we need to go
             // back through the spans that we created and remove
             // the unclosed emphasis type from those spans.
-            if (spans != null) {
-                if (currentSpanType != EmphasisType.None) {
+            if (spans is not null) {
+                if ((currentSpanType != EmphasisType.None) && (typeStartIndexes is not null)) {
                     if (typeStartIndexes.TryGetValue(EmphasisType.Bold, out int markerStartIndex)) {
                         RemoveEmphasisFromLastSpans(EmphasisType.Bold, markerStartIndex, spans);
                     }

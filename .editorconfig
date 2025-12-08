@@ -1,0 +1,12 @@
+root = true
+
+[*.yml]
+tab_size = 2
+
+[*.cs]
+
+# IDE0290: Use primary constructor
+dotnet_diagnostic.IDE0290.severity = none
+
+# IDE0305: Simplify collection initialization
+dotnet_diagnostic.IDE0305.severity = none
