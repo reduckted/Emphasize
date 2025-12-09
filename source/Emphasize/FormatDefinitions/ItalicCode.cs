@@ -1,34 +1,32 @@
-﻿#nullable enable
+#nullable enable
 
 using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Utilities;
 using System.ComponentModel.Composition;
 
 
-namespace Emphasize.FormatDefinitions {
+namespace Emphasize.FormatDefinitions; 
 
-    [ClassificationType(ClassificationTypeNames = Name)]
-    [Export(typeof(EditorFormatDefinition))]
+[ClassificationType(ClassificationTypeNames = Name)]
+[Export(typeof(EditorFormatDefinition))]
+[Name(Name)]
+[Order(After = Priority.High)]
+[UserVisible(true)]
+public class ItalicCode : ClassificationFormatDefinition {
+
+    public const string Name = "Emphasize - Italic, Code";
+
+
+    [Export(typeof(ClassificationTypeDefinition))]
     [Name(Name)]
-    [Order(After = Priority.High)]
-    [UserVisible(true)]
-    public class ItalicCode : ClassificationFormatDefinition {
-
-        public const string Name = "Emphasize - Italic, Code";
+    public static readonly ClassificationTypeDefinition? ClassificationType;
 
 
-        [Export(typeof(ClassificationTypeDefinition))]
-        [Name(Name)]
-        public static readonly ClassificationTypeDefinition? ClassificationType;
-
-
-        public ItalicCode() {
-            DisplayName = Name;
-            IsItalic = true;
-            BackgroundBrush = Code.CreateBackgroundBrush();
-            BackgroundOpacity = Code.GetBackgroundOpacity();
-        }
-
+    public ItalicCode() {
+        DisplayName = Name;
+        IsItalic = true;
+        BackgroundBrush = Code.CreateBackgroundBrush();
+        BackgroundOpacity = Code.GetBackgroundOpacity();
     }
 
 }
