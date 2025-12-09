@@ -16,7 +16,7 @@ namespace Emphasize {
             HashSet<string> names = new(StringComparer.OrdinalIgnoreCase);
 
 
-            foreach (var type in GetFormatDefinitionTypes().Select((x) => x.Cast<Type>().First())) {
+            foreach (var type in GetFormatDefinitionTypes().Select((x) => x.Data)) {
                 names.Add(GetName(type));
             }
 
@@ -90,14 +90,16 @@ namespace Emphasize {
         }
 
 
-        public static IEnumerable<object[]> GetFormatDefinitionTypes() {
-            yield return new object[] { typeof(FormatDefinitions.Bold) };
-            yield return new object[] { typeof(FormatDefinitions.BoldItalic) };
-            yield return new object[] { typeof(FormatDefinitions.BoldCode) };
-            yield return new object[] { typeof(FormatDefinitions.BoldItalicCode) };
-            yield return new object[] { typeof(FormatDefinitions.Italic) };
-            yield return new object[] { typeof(FormatDefinitions.ItalicCode) };
-            yield return new object[] { typeof(FormatDefinitions.Code) };
+        public static TheoryData<Type> GetFormatDefinitionTypes() {
+            return [
+                typeof(FormatDefinitions.Bold),
+                typeof(FormatDefinitions.BoldItalic) ,
+                typeof(FormatDefinitions.BoldCode) ,
+                typeof(FormatDefinitions.BoldItalicCode) ,
+                typeof(FormatDefinitions.Italic) ,
+                typeof(FormatDefinitions.ItalicCode) ,
+                typeof(FormatDefinitions.Code)
+            ];
         }
 
 

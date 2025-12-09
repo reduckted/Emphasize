@@ -34,7 +34,7 @@ namespace Emphasize {
             results = Parse($"{marker}all covered{marker}");
 
             Assert.Equal(
-                new[] { new EmphasisSpan { StartOffset = 0, Length = 13, Type = type } },
+                [new EmphasisSpan { StartOffset = 0, Length = 13, Type = type }],
                 results
             );
         }
@@ -49,7 +49,7 @@ namespace Emphasize {
             results = Parse($"{marker}this{marker} is marked");
 
             Assert.Equal(
-                new[] { new EmphasisSpan { StartOffset = 0, Length = 6, Type = type } },
+                [new EmphasisSpan { StartOffset = 0, Length = 6, Type = type }],
                 results
             );
         }
@@ -64,7 +64,7 @@ namespace Emphasize {
             results = Parse($"this {marker}is{marker} marked");
 
             Assert.Equal(
-                new[] { new EmphasisSpan { StartOffset = 5, Length = 4, Type = type } },
+                [new EmphasisSpan { StartOffset = 5, Length = 4, Type = type }],
                 results
             );
         }
@@ -79,7 +79,7 @@ namespace Emphasize {
             results = Parse($"this is {marker}marked text{marker}");
 
             Assert.Equal(
-                new[] { new EmphasisSpan { StartOffset = 8, Length = 13, Type = type } },
+                [new EmphasisSpan { StartOffset = 8, Length = 13, Type = type }],
                 results
             );
         }
@@ -101,7 +101,7 @@ namespace Emphasize {
             results = Parse($"this is {marker}marked{marker}{punctuation} and has punctuation");
 
             Assert.Equal(
-                new[] { new EmphasisSpan { StartOffset = 8, Length = 8, Type = type } },
+                [new EmphasisSpan { StartOffset = 8, Length = 8, Type = type }],
                 results
             );
         }
@@ -116,7 +116,7 @@ namespace Emphasize {
             results = Parse($"this is {bracket}{marker}marked{marker} with brackets");
 
             Assert.Equal(
-                new[] { new EmphasisSpan { StartOffset = 9, Length = 8, Type = type } },
+                [new EmphasisSpan { StartOffset = 9, Length = 8, Type = type }],
                 results
             );
         }
@@ -131,7 +131,7 @@ namespace Emphasize {
             results = Parse($"this is {marker}marked{marker}{bracket} with brackets");
 
             Assert.Equal(
-                new[] { new EmphasisSpan { StartOffset = 8, Length = 8, Type = type } },
+                [new EmphasisSpan { StartOffset = 8, Length = 8, Type = type }],
                 results
             );
         }
@@ -146,10 +146,10 @@ namespace Emphasize {
             results = Parse($"this {marker}is{marker} marked {marker}and{marker} so is this");
 
             Assert.Equal(
-                new[] {
+                [
                     new  EmphasisSpan {StartOffset = 5, Length = 4, Type = type },
                     new  EmphasisSpan {StartOffset = 17, Length = 5, Type = type }
-                },
+                ],
                 results
             );
         }
@@ -163,11 +163,11 @@ namespace Emphasize {
             results = Parse("this *is* marked _and_ so `is` this");
 
             Assert.Equal(
-                new[] {
+                [
                     new EmphasisSpan{ StartOffset = 5, Length = 4, Type = EmphasisType.Bold },
                     new EmphasisSpan{ StartOffset = 17, Length = 5, Type = EmphasisType.Italic },
                     new EmphasisSpan{ StartOffset = 26, Length = 4, Type = EmphasisType.Code }
-                },
+                ],
                 results
             );
         }
@@ -215,13 +215,13 @@ namespace Emphasize {
             results = Parse($"this has *_`mixed`_* types");
 
             Assert.Equal(
-                new[] {
+                [
                     new EmphasisSpan { StartOffset = 9, Length = 1, Type = EmphasisType.Bold },
                     new EmphasisSpan { StartOffset = 10, Length = 1, Type = EmphasisType.Bold | EmphasisType.Italic },
                     new EmphasisSpan { StartOffset = 11, Length = 7, Type = EmphasisType.Bold | EmphasisType.Italic | EmphasisType.Code },
                     new EmphasisSpan { StartOffset = 18, Length = 1, Type = EmphasisType.Bold | EmphasisType.Italic },
                     new EmphasisSpan { StartOffset = 19, Length = 1, Type = EmphasisType.Bold }
-                },
+                ],
                 results
             );
         }
@@ -238,7 +238,7 @@ namespace Emphasize {
             //                                cccccccccccccccccccccccccccc
 
             Assert.Equal(
-                new[] {
+                [
                     new EmphasisSpan { StartOffset = 5, Length = 5, Type = EmphasisType.Bold },
                     new EmphasisSpan { StartOffset = 10, Length = 7, Type = EmphasisType.Bold | EmphasisType.Italic },
                     new EmphasisSpan { StartOffset = 17, Length = 6, Type = EmphasisType.Bold | EmphasisType.Italic | EmphasisType.Code },
@@ -247,7 +247,7 @@ namespace Emphasize {
                     new EmphasisSpan { StartOffset = 36, Length = 9, Type = EmphasisType.Bold | EmphasisType.Code },
                     new EmphasisSpan { StartOffset = 45, Length = 6, Type = EmphasisType.Bold },
                     new EmphasisSpan { StartOffset = 56, Length = 10, Type = EmphasisType.Italic }
-                },
+                ],
                 results
             );
         }
@@ -261,7 +261,7 @@ namespace Emphasize {
             results = Parse("this *has _unclosed spans*");
 
             Assert.Equal(
-                new[] { new EmphasisSpan { StartOffset = 5, Length = 21, Type = EmphasisType.Bold } },
+                [new EmphasisSpan { StartOffset = 5, Length = 21, Type = EmphasisType.Bold }],
                 results
             );
         }
@@ -276,7 +276,7 @@ namespace Emphasize {
             results = Parse($"this {marker}comment{marker} is {marker}incomplete");
 
             Assert.Equal(
-                new[] { new EmphasisSpan { StartOffset = 5, Length = 9, Type = type } },
+                [new EmphasisSpan { StartOffset = 5, Length = 9, Type = type }],
                 results
             );
         }
@@ -290,48 +290,46 @@ namespace Emphasize {
             results = Parse("/* this is a *c-style* comment */");
 
             Assert.Equal(
-                new[] { new EmphasisSpan { StartOffset = 13, Length = 9, Type = EmphasisType.Bold } },
+                [new EmphasisSpan { StartOffset = 13, Length = 9, Type = EmphasisType.Bold }],
                 results
             );
         }
 
 
-        public static IEnumerable<object[]> GetMarkerTypes() {
-            yield return new object[] { "*", EmphasisType.Bold };
-            yield return new object[] { "_", EmphasisType.Italic };
-            yield return new object[] { "`", EmphasisType.Code };
+        public static IEnumerable<TheoryDataRow<string, EmphasisType>> GetMarkerTypes() {
+            yield return new("*", EmphasisType.Bold);
+            yield return new("_", EmphasisType.Italic);
+            yield return new("`", EmphasisType.Code);
         }
 
 
-        public static IEnumerable<object[]> GetMarkers() {
-            foreach (var item in GetMarkerTypes()) {
-                yield return new object[] { item[0] };
-            }
+        public static TheoryData<string> GetMarkers() {
+            return [.. GetMarkerTypes().Select((x) => x.Data.Item1)];
         }
 
 
-        public static IEnumerable<object[]> GetMarkerTypesAndPunctuation() {
+        public static IEnumerable<TheoryDataRow<string, EmphasisType, char>> GetMarkerTypesAndPunctuation() {
             foreach (var item in GetMarkerTypes()) {
                 foreach (char ch in new[] { '.', ',', '?', '!', ':', ';' }) {
-                    yield return item.Concat(new object[] { ch }).ToArray();
+                    yield return new(item.Data.Item1, item.Data.Item2, ch);
                 }
             }
         }
 
 
-        public static IEnumerable<object[]> GetMarkerTypesAndOpeningBrackets() {
+        public static IEnumerable<TheoryDataRow<string, EmphasisType, char>> GetMarkerTypesAndOpeningBrackets() {
             foreach (var item in GetMarkerTypes()) {
                 foreach (char ch in new[] { '{', '<', '(', '[' }) {
-                    yield return item.Concat(new object[] { ch }).ToArray();
+                    yield return new(item.Data.Item1, item.Data.Item2, ch);
                 }
             }
         }
 
 
-        public static IEnumerable<object[]> GetMarkerTypesAndClosingBrackets() {
+        public static IEnumerable<TheoryDataRow<string, EmphasisType, char>> GetMarkerTypesAndClosingBrackets() {
             foreach (var item in GetMarkerTypes()) {
                 foreach (char ch in new[] { '}', '>', ')', ']' }) {
-                    yield return item.Concat(new object[] { ch }).ToArray();
+                    yield return new(item.Data.Item1, item.Data.Item2, ch);
                 }
             }
         }
