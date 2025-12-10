@@ -18,11 +18,20 @@ Three types of emphasis are supported:
 
 |Type      |Character         |Example              |
 |----------|------------------|---------------------|
-|**Bold**  | Asterisk ( * )   |This \***is bold**\*.|
-|*Italic*  | Underscore ( _ ) |*\_This is italic\_*.|
-|`Code`    | Backtick ( \` )  |This is \``code`\`.  |
+|**Bold**  | Asterisk ( * )   |This **\*is bold\*** |
+|*Italic*  | Underscore ( _ ) |This *\_is italic\_* |
+|`Code`    | Backtick ( \` )  |This `` `is code` `` |
 
 You can even nest the different types of emphasis.
+
+If you prefer to use markdown-style bold and italic formatting, enable the option in _Tools -> Options -> Emphasize_. When that option is enabled, the types of formatting are:
+
+|Type      |Character               |Example                 |
+|----------|------------------------|------------------------|
+|**Bold**  | Double-asterisk ( ** ) |This **\*\*is bold\*\***|
+|*Italic*  | Single-asterisk ( * )  |This \**is italic*\*    |
+|*Italic*  | Underscore ( _ )       |This *\_is italic\_*    |
+|`Code`    | Backtick ( \` )        |This `` `is code` ``    |
 
 
 ## Language Support
