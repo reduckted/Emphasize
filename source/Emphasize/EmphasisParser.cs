@@ -4,70 +4,74 @@ using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Linq;
 
-namespace Emphasize; 
+namespace Emphasize;
 
 [Export]
 public class EmphasisParser {
 
     private static readonly HashSet<char> OpeningBrackets = ['{', '[', '<', '('];
     private static readonly HashSet<char> ClosingBrackets = ['}', ']', '>', ')'];
-    private static readonly Dictionary<char, EmphasisType> Markers = new() {
-        {'*', EmphasisType.Bold},
-        {'_', EmphasisType.Italic},
-        {'`', EmphasisType.Code }
-    };
 
 
-    public IEnumerable<EmphasisSpan> Parse(string text) {
+    public IEnumerable<EmphasisSpan> Parse(string text, bool useMarkdownStyle) {
         List<EmphasisSpan>? spans = null;
         Dictionary<EmphasisType, int>? typeStartIndexes = null;
         EmphasisType currentSpanType;
         int startIndex;
+        int charIndex;
+        Marker? previousStartMarker;
 
 
         startIndex = 0;
+        charIndex = 0;
         currentSpanType = EmphasisType.None;
+        previousStartMarker = null;
 
-        for (int i = 0; i < text.Length; i++) {
-            char ch;
-
-
-            ch = text[i];
-
-            // Check if this character is a marker.
-            if (Markers.TryGetValue(ch, out EmphasisType markerType)) {
-                if ((currentSpanType & markerType) == markerType) {
+        while (charIndex < text.Length) {
+            // Check if this character could be a marker.
+            if (TryGetMarker(text, charIndex, useMarkdownStyle, out Marker marker)) {
+                if ((currentSpanType & marker.Type) == marker.Type) {
                     // A span for this type is already open, so this marker
                     // is possibly a closing marker. Check that it can be a
                     // closing marker, and if it can be, end the current span.
-                    if (CanBeEndMarker(text, i, markerType, currentSpanType)) {
+                    if (CanBeEndMarker(text, charIndex, useMarkdownStyle, marker, currentSpanType)) {
                         spans ??= [];
 
                         // Add a span that ends at the current index.
                         spans.Add(
                             new EmphasisSpan {
                                 StartOffset = startIndex,
-                                Length = i - startIndex + 1,
+                                Length = charIndex - startIndex + marker.Length,
                                 Type = currentSpanType
                             }
                         );
 
                         // Remove the marker type from the new span, and record
                         // that the new span starts from the next index.
-                        currentSpanType &= (~markerType);
-                        startIndex = i + 1;
+                        currentSpanType &= (~marker.Type);
+                        startIndex = charIndex + marker.Length;
 
                         // Also remove the marker type from the tracking
                         // collection of start indexes. This marker has closed,
                         // so we don't need to remember where it starts.
-                        typeStartIndexes?.Remove(markerType);
+                        typeStartIndexes?.Remove(marker.Type);
+
+                        // Skip past the marker.
+                        charIndex += marker.Length;
+
+                    } else {
+                        // The marker that we found can't actually be a
+                        // marker, so we can just move to the next character.
+                        charIndex += 1;
                     }
+
+                    previousStartMarker = null;
 
                 } else {
                     // A span for this type is not already open, so this marker is
                     // possibly an opening marker. Check that it can be an opening marker,
                     // and if it can be, end the current span and start a new one.
-                    if (CanBeStartMarker(text, i, markerType, currentSpanType)) {
+                    if (CanBeStartMarker(text, charIndex, marker, previousStartMarker)) {
                         if (currentSpanType != EmphasisType.None) {
                             spans ??= [];
 
@@ -75,21 +79,35 @@ public class EmphasisParser {
                             spans.Add(
                                 new EmphasisSpan {
                                     StartOffset = startIndex,
-                                    Length = i - startIndex,
+                                    Length = charIndex - startIndex,
                                     Type = currentSpanType
                                 }
                             );
                         }
 
-                        currentSpanType |= markerType;
-                        startIndex = i;
+                        currentSpanType |= marker.Type;
+                        startIndex = charIndex;
 
                         // Record where this marker type started so that we can remove
                         // it from the other spans if it doesn't have a closing marker.
                         typeStartIndexes ??= [];
-                        typeStartIndexes[markerType] = i;
+                        typeStartIndexes[marker.Type] = charIndex;
+
+                        // Skip past the marker.
+                        charIndex += marker.Length;
+                        previousStartMarker = marker;
+
+                    } else {
+                        // The marker that we found can't actually be a
+                        // marker, so we can just move to the next character.
+                        charIndex += 1;
+                        previousStartMarker = null;
                     }
                 }
+
+            } else {
+                charIndex += 1;
+                previousStartMarker = null;
             }
         }
 
@@ -131,10 +149,52 @@ public class EmphasisParser {
     }
 
 
-    private bool CanBeStartMarker(string text, int charIndex, EmphasisType markerType, EmphasisType spanType) {
+    private static bool TryGetMarker(
+        string text,
+        int charIndex,
+        bool useMarkdownStyle,
+        out Marker marker
+    ) {
+        char ch;
+
+
+        ch = text[charIndex];
+
+        if (ch == '_') {
+            marker = new Marker(EmphasisType.Italic, 1);
+            return true;
+        }
+
+        if (ch == '`') {
+            marker = new Marker(EmphasisType.Code, 1);
+            return true;
+        }
+
+        if (ch == '*') {
+            if (useMarkdownStyle) {
+                if (((charIndex + 1) < text.Length) && (text[charIndex + 1] == '*')) {
+                    marker = new Marker(EmphasisType.Bold, 2);
+                } else {
+                    marker = new Marker(EmphasisType.Italic, 1);
+                }
+
+                return true;
+
+            } else {
+                marker = new Marker(EmphasisType.Bold, 1);
+                return true;
+            }
+        }
+
+        marker = default;
+        return false;
+    }
+
+
+    private bool CanBeStartMarker(string text, int charIndex, Marker currentMarker, Marker? previousStartMarker) {
         // Markers cannot start at the end of the text, so there must
         // be a following character, and it cannot be whitespace.
-        if ((charIndex < (text.Length - 1)) && (!char.IsWhiteSpace(text[charIndex + 1]))) {
+        if (((charIndex + currentMarker.Length) < text.Length) && (!char.IsWhiteSpace(text[charIndex + currentMarker.Length]))) {
             char previousChar;
 
 
@@ -146,20 +206,13 @@ public class EmphasisParser {
             previousChar = text[charIndex - 1];
 
             // Markers can start after whitespace or an opening bracket.
-            if (char.IsWhiteSpace(text[charIndex - 1]) || OpeningBrackets.Contains(previousChar)) {
+            if (char.IsWhiteSpace(previousChar) || OpeningBrackets.Contains(previousChar)) {
                 return true;
             }
 
             // Or markers can start after another start marker.
-            if (Markers.TryGetValue(previousChar, out EmphasisType previousType)) {
-                // The previous character would be a start marker if
-                // it's a different type to this marker, and that
-                // previous marker type is in the current span type.
-                if (previousType != markerType) {
-                    if ((spanType & previousType) == previousType) {
-                        return true;
-                    }
-                }
+            if (previousStartMarker.HasValue) {
+                return true;
             }
         }
 
@@ -167,18 +220,24 @@ public class EmphasisParser {
     }
 
 
-    private bool CanBeEndMarker(string text, int charIndex, EmphasisType markerType, EmphasisType spanType) {
+    private bool CanBeEndMarker(
+        string text,
+        int charIndex,
+        bool useMarkdownStyle,
+        Marker currentMarker,
+        EmphasisType spanType
+    ) {
         // Markers can only end after a non-whitespace character.
         if ((charIndex > 0) && (!char.IsWhiteSpace(text[charIndex - 1]))) {
             char nextChar;
 
 
             // Markers can end at the end of the text.
-            if (charIndex == (text.Length - 1)) {
+            if ((charIndex + currentMarker.Length) == text.Length) {
                 return true;
             }
 
-            nextChar = text[charIndex + 1];
+            nextChar = text[charIndex + currentMarker.Length];
 
             // Markers can end before whitespace, punctuation, or a closing bracket.
             if (char.IsWhiteSpace(nextChar) || char.IsPunctuation(nextChar) || ClosingBrackets.Contains(nextChar)) {
@@ -186,12 +245,12 @@ public class EmphasisParser {
             }
 
             // Or a marker can end before another end marker.
-            if (Markers.TryGetValue(nextChar, out EmphasisType nextType)) {
-                // The next character will be an end marker if
+            if (TryGetMarker(text, charIndex + currentMarker.Length, useMarkdownStyle, out Marker nextMarker)) {
+                // The next marker will be an end marker if
                 // it's a different type to this marker, and that
                 // next marker type is in the current span type.
-                if (nextType != markerType) {
-                    if ((spanType & nextType) == nextType) {
+                if (nextMarker.Type != currentMarker.Type) {
+                    if ((spanType & nextMarker.Type) == nextMarker.Type) {
                         return true;
                     }
                 }
@@ -240,5 +299,9 @@ public class EmphasisParser {
             }
         }
     }
+
+
+
+    private record struct Marker(EmphasisType Type, int Length);
 
 }
