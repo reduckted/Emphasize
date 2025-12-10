@@ -7,23 +7,26 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Emphasize; 
+namespace Emphasize;
 
 public class Tagger : ITagger<ClassificationTag> {
 
     private readonly IClassificationTypeRegistryService _registry;
     private readonly ITagAggregator<IClassificationTag> _aggregator;
     private readonly EmphasisParser _parser;
+    private readonly OptionsProvider _options;
 
 
     public Tagger(
         IClassificationTypeRegistryService registry,
         ITagAggregator<IClassificationTag> aggregator,
-        EmphasisParser parser
+        EmphasisParser parser,
+        OptionsProvider options
     ) {
         _registry = registry;
         _aggregator = aggregator;
         _parser = parser;
+        _options = options;
     }
 
 
@@ -61,7 +64,7 @@ public class Tagger : ITagger<ClassificationTag> {
         text = span.GetText();
 
         if (!string.IsNullOrWhiteSpace(text)) {
-            foreach (EmphasisSpan item in _parser.Parse(text)) {
+            foreach (EmphasisSpan item in _parser.Parse(text, _options.UseMarkdownStyle)) {
                 IClassificationType? classification;
 
 

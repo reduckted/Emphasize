@@ -1,5 +1,6 @@
 #nullable enable
 
+using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Text.Editor;
@@ -8,7 +9,7 @@ using Microsoft.VisualStudio.Utilities;
 using System.ComponentModel.Composition;
 
 
-namespace Emphasize; 
+namespace Emphasize;
 
 [ContentType("code")]
 [Export(typeof(IViewTaggerProvider))]
@@ -21,6 +22,7 @@ public class TaggerProvider : IViewTaggerProvider {
     private readonly IClassificationTypeRegistryService _classificationRegistry;
     private readonly IViewTagAggregatorFactoryService _aggregatorFactory;
     private readonly EmphasisParser _parser;
+    private readonly OptionsProvider _options;
     private bool _creatingInnerTagAggregator;
 
 
@@ -28,11 +30,13 @@ public class TaggerProvider : IViewTaggerProvider {
     public TaggerProvider(
         IClassificationTypeRegistryService classificationRegistry,
         IViewTagAggregatorFactoryService aggregatorFactory,
+        SVsServiceProvider serviceProvider,
         EmphasisParser parser
     ) {
         _classificationRegistry = classificationRegistry;
         _aggregatorFactory = aggregatorFactory;
         _parser = parser;
+        _options = (OptionsProvider)ServiceProvider.GlobalProvider.GetService(typeof(OptionsProvider));
     }
 
 
@@ -58,7 +62,7 @@ public class TaggerProvider : IViewTaggerProvider {
                 _creatingInnerTagAggregator = false;
             }
 
-            return (ITagger<T>)new Tagger(_classificationRegistry, tagAggregator, _parser);
+            return (ITagger<T>)new Tagger(_classificationRegistry, tagAggregator, _parser, _options);
         });
     }
 

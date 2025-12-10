@@ -1,7 +1,8 @@
+#nullable enable
+
 using System;
 
-
-namespace Emphasize; 
+namespace Emphasize;
 
 [Flags()]
 public enum EmphasisType {

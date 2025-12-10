@@ -1,15 +1,20 @@
 #nullable enable
 
-namespace Emphasize; 
+namespace Emphasize;
 
 public struct EmphasisSpan {
 
     public int StartOffset { get; set; }
 
-    
+
     public int Length { get; set; }
 
 
     public EmphasisType Type { get; set; }
+
+
+    public override string ToString() {
+        return $"<{Type}>({StartOffset},{Length})";
+    }
 
 }
