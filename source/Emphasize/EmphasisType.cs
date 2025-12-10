@@ -1,15 +1,13 @@
-﻿using System;
+using System;
 
 
-namespace Emphasize {
+namespace Emphasize; 
 
-    [Flags()]
-    public enum EmphasisType {
-        None = 0,
-        Bold = 1,
-        Italic = 2,
-        Code = 4,
-
-    }
+[Flags()]
+public enum EmphasisType {
+    None = 0,
+    Bold = 1,
+    Italic = 2,
+    Code = 4,
 
 }

@@ -1,32 +1,30 @@
-﻿#nullable enable
+#nullable enable
 
 using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Utilities;
 using System.ComponentModel.Composition;
 
 
-namespace Emphasize.FormatDefinitions {
+namespace Emphasize.FormatDefinitions; 
 
-    [ClassificationType(ClassificationTypeNames = Name)]
-    [Export(typeof(EditorFormatDefinition))]
+[ClassificationType(ClassificationTypeNames = Name)]
+[Export(typeof(EditorFormatDefinition))]
+[Name(Name)]
+[Order(After = Priority.High)]
+[UserVisible(true)]
+public class Bold : ClassificationFormatDefinition {
+
+    public const string Name = "Emphasize - Bold";
+
+
+    [Export(typeof(ClassificationTypeDefinition))]
     [Name(Name)]
-    [Order(After = Priority.High)]
-    [UserVisible(true)]
-    public class Bold : ClassificationFormatDefinition {
-
-        public const string Name = "Emphasize - Bold";
+    public static readonly ClassificationTypeDefinition? ClassificationType;
 
 
-        [Export(typeof(ClassificationTypeDefinition))]
-        [Name(Name)]
-        public static readonly ClassificationTypeDefinition? ClassificationType;
-
-
-        public Bold() {
-            DisplayName = Name;
-            IsBold = true;
-        }
-
+    public Bold() {
+        DisplayName = Name;
+        IsBold = true;
     }
 
 }

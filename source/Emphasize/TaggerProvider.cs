@@ -8,60 +8,58 @@ using Microsoft.VisualStudio.Utilities;
 using System.ComponentModel.Composition;
 
 
-namespace Emphasize {
+namespace Emphasize; 
 
-    [ContentType("code")]
-    [Export(typeof(IViewTaggerProvider))]
-    [TagType(typeof(ClassificationTag))]
-    public class TaggerProvider : IViewTaggerProvider {
+[ContentType("code")]
+[Export(typeof(IViewTaggerProvider))]
+[TagType(typeof(ClassificationTag))]
+public class TaggerProvider : IViewTaggerProvider {
 
-        private static readonly object TaggerProperty = new();
-
-
-        private readonly IClassificationTypeRegistryService _classificationRegistry;
-        private readonly IViewTagAggregatorFactoryService _aggregatorFactory;
-        private readonly EmphasisParser _parser;
-        private bool _creatingInnerTagAggregator;
+    private static readonly object TaggerProperty = new();
 
 
-        [ImportingConstructor]
-        public TaggerProvider(
-            IClassificationTypeRegistryService classificationRegistry,
-            IViewTagAggregatorFactoryService aggregatorFactory,
-            EmphasisParser parser
-        ) {
-            _classificationRegistry = classificationRegistry;
-            _aggregatorFactory = aggregatorFactory;
-            _parser = parser;
+    private readonly IClassificationTypeRegistryService _classificationRegistry;
+    private readonly IViewTagAggregatorFactoryService _aggregatorFactory;
+    private readonly EmphasisParser _parser;
+    private bool _creatingInnerTagAggregator;
+
+
+    [ImportingConstructor]
+    public TaggerProvider(
+        IClassificationTypeRegistryService classificationRegistry,
+        IViewTagAggregatorFactoryService aggregatorFactory,
+        EmphasisParser parser
+    ) {
+        _classificationRegistry = classificationRegistry;
+        _aggregatorFactory = aggregatorFactory;
+        _parser = parser;
+    }
+
+
+    public ITagger<T>? CreateTagger<T>(ITextView textView, ITextBuffer buffer) where T : ITag {
+        if (_creatingInnerTagAggregator) {
+            return null;
         }
 
+        return textView.Properties.GetOrCreateSingletonProperty(TaggerProperty, () => {
+            ITagAggregator<IClassificationTag> tagAggregator;
 
-        public ITagger<T>? CreateTagger<T>(ITextView textView, ITextBuffer buffer) where T : ITag {
-            if (_creatingInnerTagAggregator) {
-                return null;
+
+            // To create the classification tag spans for Emphasize classifications,
+            // we need to know where the comment spans are. The only way we can do that
+            // is to use another classification tag aggregator. Creating that tag aggregator
+            // will recursively call this `CreateTagger` method. Set a flag so that the
+            // next call to this method should return null to avoid infinite recursion.
+            _creatingInnerTagAggregator = true;
+
+            try {
+                tagAggregator = _aggregatorFactory.CreateTagAggregator<IClassificationTag>(textView);
+            } finally {
+                _creatingInnerTagAggregator = false;
             }
 
-            return textView.Properties.GetOrCreateSingletonProperty(TaggerProperty, () => {
-                ITagAggregator<IClassificationTag> tagAggregator;
-
-
-                // To create the classification tag spans for Emphasize classifications,
-                // we need to know where the comment spans are. The only way we can do that
-                // is to use another classification tag aggregator. Creating that tag aggregator
-                // will recursively call this `CreateTagger` method. Set a flag so that the
-                // next call to this method should return null to avoid infinite recursion.
-                _creatingInnerTagAggregator = true;
-
-                try {
-                    tagAggregator = _aggregatorFactory.CreateTagAggregator<IClassificationTag>(textView);
-                } finally {
-                    _creatingInnerTagAggregator = false;
-                }
-
-                return (ITagger<T>)new Tagger(_classificationRegistry, tagAggregator, _parser);
-            });
-        }
-
+            return (ITagger<T>)new Tagger(_classificationRegistry, tagAggregator, _parser);
+        });
     }
 
 }
