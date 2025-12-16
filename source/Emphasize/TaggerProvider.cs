@@ -16,9 +16,6 @@ namespace Emphasize;
 [TagType(typeof(ClassificationTag))]
 public class TaggerProvider : IViewTaggerProvider {
 
-    private static readonly object TaggerProperty = new();
-
-
     private readonly IClassificationTypeRegistryService _classificationRegistry;
     private readonly IViewTagAggregatorFactoryService _aggregatorFactory;
     private readonly EmphasisParser _parser;
@@ -45,7 +42,7 @@ public class TaggerProvider : IViewTaggerProvider {
             return null;
         }
 
-        return textView.Properties.GetOrCreateSingletonProperty(TaggerProperty, () => {
+        return textView.Properties.GetOrCreateSingletonProperty(typeof(Tagger), () => {
             ITagAggregator<IClassificationTag> tagAggregator;
 
 

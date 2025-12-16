@@ -15,6 +15,7 @@ public class Tagger : ITagger<ClassificationTag> {
     private readonly ITagAggregator<IClassificationTag> _aggregator;
     private readonly EmphasisParser _parser;
     private readonly OptionsProvider _options;
+    private bool _gettingTags;
 
 
     public Tagger(
@@ -37,14 +38,27 @@ public class Tagger : ITagger<ClassificationTag> {
 
 
     public IEnumerable<ITagSpan<ClassificationTag>> GetTags(NormalizedSnapshotSpanCollection spans) {
-        return (
-            from span in spans
-            from mappingTag in _aggregator.GetTags(spans)
-            where IsCommentSpan(mappingTag)
-            from mappingSpan in mappingTag.Span.GetSpans(mappingTag.Span.AnchorBuffer.CurrentSnapshot)
-            from tagSpan in GetTagSpans(mappingSpan)
-            select tagSpan
-        ).ToList();
+        // When previewing code fixes, we seem to be called recursively
+        // when calling the aggregator. If we are in the process
+        // of getting tags, then return an empty collection.
+        if (_gettingTags) {
+            return [];
+        }
+
+        _gettingTags = true;
+
+        try {
+            return (
+                from mappingTag in _aggregator.GetTags(spans)
+                where IsCommentSpan(mappingTag)
+                from mappingSpan in mappingTag.Span.GetSpans(mappingTag.Span.AnchorBuffer.CurrentSnapshot)
+                from tagSpan in GetTagSpans(mappingSpan)
+                select tagSpan
+            ).ToList();
+
+        } finally {
+            _gettingTags = false;
+        }
     }
 
 
